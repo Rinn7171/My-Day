@@ -1,0 +1,326 @@
+/* ===== リセット & ベース ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  background: #f5f3ee;
+  color: #333;
+  min-height: 100vh;
+  /* iOS Safari のバウンススクロール防止 */
+  overscroll-behavior: none;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  background: #fff;
+  border-bottom: 2px solid #ddd;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #444;
+  flex: 1;
+}
+
+button.primary {
+  background: #5b8dee;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s;
+  white-space: nowrap;
+  /* タップ領域を確保 */
+  min-height: 44px;
+}
+button.primary:hover { background: #4070d0; }
+button.primary:active { background: #3560c0; }
+
+/* ===== タイムラインラッパー ===== */
+#timeline-wrap {
+  padding: 16px 0 32px;
+  /* 横スクロール領域 */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== グリッド本体 ===== */
+.tl-grid {
+  display: grid;
+  /* 左列: 日付ラベル固定幅 / 右列: タイムライン */
+  grid-template-columns: 48px 1fr;
+  /* スマホでも最低幅を確保して横スクロール可能に */
+  min-width: 600px;
+}
+
+/* ===== 時刻ヘッダー行 ===== */
+.tl-header-spacer { /* 左上の空白 */ }
+
+.tl-hour-header {
+  position: relative;
+  height: 28px;
+  border-bottom: 2px solid #ccc;
+}
+
+.tl-hour-label {
+  position: absolute;
+  top: 4px;
+  font-size: 0.68rem;
+  color: #888;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ===== 日付ラベル ===== */
+.tl-date-label {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #555;
+  justify-content: flex-end;
+  border-bottom: 1px solid #e0ddd6;
+  min-height: 52px;
+  white-space: nowrap;
+}
+.tl-date-label.today { color: #5b8dee; }
+
+/* ===== タイムライン行 ===== */
+.tl-row {
+  position: relative;
+  min-height: 52px;
+  border-bottom: 1px solid #e0ddd6;
+  background: #fff;
+}
+.tl-row:hover { background: #fafaf7; }
+
+/* グリッド線 */
+.tl-gridline {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: #eee;
+  pointer-events: none;
+}
+.tl-gridline.hour6 { background: #ddd; }
+
+/* ===== 行動ブロック ===== */
+.activity-block {
+  position: absolute;
+  top: 7px; bottom: 7px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  transition: filter 0.15s, transform 0.1s;
+  min-width: 4px;
+  z-index: 1;
+  /* タップ操作しやすいように最低高さ */
+  min-height: 28px;
+}
+.activity-block:hover,
+.activity-block:focus {
+  filter: brightness(0.88);
+  transform: scaleY(1.1);
+  z-index: 10;
+  outline: none;
+}
+.activity-block .block-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== ツールチップ ===== */
+.tooltip {
+  display: none;
+  position: fixed;
+  background: rgba(30,30,30,0.93);
+  color: #fff;
+  padding: 8px 13px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  z-index: 500;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+  line-height: 1.65;
+}
+
+/* ===== コンテキストメニュー ===== */
+.ctx-menu {
+  display: none;
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  z-index: 600;
+  overflow: hidden;
+  min-width: 140px;
+}
+.ctx-menu.open { display: block; }
+.ctx-menu button {
+  display: block;
+  width: 100%;
+  padding: 13px 18px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.92rem;
+  cursor: pointer;
+  color: #333;
+}
+.ctx-menu button:hover { background: #f5f5f5; }
+.ctx-menu button.danger { color: #e04040; }
+
+/* ===== モーダル ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.38);
+  z-index: 200;
+  align-items: flex-end;   /* スマホ: 下から登場 */
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: #fff;
+  border-radius: 18px 18px 0 0;   /* スマホ: 下シート */
+  padding: 24px 20px 32px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.14);
+  /* スマホで画面を超えるなら内部スクロール */
+  max-height: 92svh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ドラッグハンドル（見た目のみ） */
+.modal::before {
+  content: '';
+  display: block;
+  width: 40px; height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  margin: 0 auto 18px;
+}
+
+.modal h2 { font-size: 1.05rem; margin-bottom: 18px; color: #333; }
+
+.form-row { margin-bottom: 14px; }
+.form-row label {
+  display: block;
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.form-row input,
+.form-row select {
+  width: 100%;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 1rem;          /* iOS でズームしない最低サイズ */
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff;
+}
+.form-row input:focus,
+.form-row select:focus { border-color: #5b8dee; }
+
+.form-row.row2 { display: flex; gap: 10px; }
+.form-row.row2 > div { flex: 1; }
+
+/* カラーピッカー */
+.color-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.color-swatch {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: border-color 0.15s, transform 0.12s;
+  /* タップ領域 */
+  -webkit-tap-highlight-color: transparent;
+}
+.color-swatch.selected {
+  border-color: #333;
+  transform: scale(1.18);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.modal-actions button {
+  flex: 1;
+  border-radius: 10px;
+  padding: 13px 0;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  min-height: 48px;
+}
+#btn-cancel { background: #eee; color: #555; }
+#btn-cancel:hover { background: #ddd; }
+#btn-save { background: #5b8dee; color: #fff; }
+#btn-save:hover { background: #4070d0; }
+#btn-save:active { background: #3560c0; }
+
+/* ===== 空状態 ===== */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+/* ===== タブレット以上: モーダルをセンター表示に ===== */
+@media (min-width: 600px) {
+  .modal-overlay { align-items: center; }
+  .modal {
+    border-radius: 16px;
+    padding: 28px 32px 32px;
+    max-height: 90svh;
+  }
+  .modal::before { display: none; }
+}
+
+/* ===== 大画面: グリッド左列を少し広げる ===== */
+@media (min-width: 900px) {
+  .tl-grid { grid-template-columns: 56px 1fr; }
+  .tl-date-label { font-size: 0.82rem; }
+  .activity-block { font-size: 0.78rem; }
+  header { padding: 12px 24px; }
+  #timeline-wrap { padding: 24px 0 40px; }
+}

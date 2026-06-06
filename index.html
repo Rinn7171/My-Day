@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- スマホで正しいスケールで表示 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- PWA / ホーム画面追加のための最低限のメタ -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
+  <title>ライフログ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header>
+  <h1>📋 ライフログ</h1>
+  <button class="primary" id="btn-open-modal">＋ 追加</button>
+</header>
+
+<!-- タイムライン -->
+<div id="timeline-wrap">
+  <div class="tl-grid" id="tl-grid"></div>
+</div>
+
+<!-- 入力モーダル -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h2 id="modal-title">行動を登録</h2>
+
+    <div class="form-row">
+      <label for="f-date">日付</label>
+      <input type="date" id="f-date">
+    </div>
+
+    <div class="form-row row2">
+      <div>
+        <label for="f-start">開始時間</label>
+        <input type="time" id="f-start" step="300">
+      </div>
+      <div>
+        <label for="f-end">終了時間</label>
+        <input type="time" id="f-end" step="300">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="f-label">行動内容</label>
+      <input type="text" id="f-label" list="activity-list" placeholder="例: 睡眠、朝食、作業…" autocomplete="off">
+      <datalist id="activity-list">
+        <option value="睡眠">
+        <option value="朝食">
+        <option value="昼食">
+        <option value="夕食">
+        <option value="入浴">
+        <option value="作業">
+        <option value="勉強">
+        <option value="運動">
+        <option value="外出">
+        <option value="休憩">
+        <option value="読書">
+        <option value="ゲーム">
+      </datalist>
+    </div>
+
+    <div class="form-row">
+      <label>色</label>
+      <div class="color-picker" id="color-picker" role="radiogroup" aria-label="色を選択"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="btn-cancel">キャンセル</button>
+      <button id="btn-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ツールチップ -->
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+
+<!-- コンテキストメニュー -->
+<div class="ctx-menu" id="ctx-menu">
+  <button id="ctx-edit">✏️ 編集</button>
+  <button class="danger" id="ctx-delete">🗑️ 削除</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
