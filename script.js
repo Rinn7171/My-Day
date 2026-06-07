@@ -241,45 +241,68 @@ document.addEventListener('pointerdown', e => {
 });
 
 // ===== 星評価UI =====
-function renderStars(value) {
-  // value: 0〜5（0=未評価）
+// 星の見た目を更新（filled=確定色, preview=ホバー色）
+function renderStars(filled, preview) {
+  // filled:  確定済みの評価（0〜5）
+  // preview: ホバー中の値（省略時 = filledと同じ）
+  const p = preview !== undefined ? preview : filled;
   document.querySelectorAll('#star-input .star').forEach(s => {
     const v = Number(s.dataset.value);
-    s.textContent = v <= value ? '★' : '☆';
-    s.classList.toggle('filled', v <= value);
+    const isFilled  = v <= filled;
+    const isPreview = !isFilled && v <= p;
+    s.textContent = (isFilled || isPreview) ? '★' : '☆';
+    s.classList.toggle('filled',  isFilled);
+    s.classList.toggle('preview', isPreview);
   });
 }
 
 function initStarInput() {
-  const stars = document.querySelectorAll('#star-input .star');
+  const container = document.getElementById('star-input');
 
-  stars.forEach(star => {
+  // ── クリック（PC・スマホ共通） ──
+  // 個々の star ではなくコンテナに委譲することで
+  // mouseenter との競合を防ぐ
+  container.addEventListener('click', e => {
+    const star = e.target.closest('.star');
+    if (!star) return;
     const v = Number(star.dataset.value);
+    // 同じ星を再タップで0リセット
+    selectedRating = (selectedRating === v) ? 0 : v;
+    renderStars(selectedRating);
+  });
 
-    // クリック: 評価を確定（同じ星を再クリックで0にリセット）
-    star.addEventListener('click', () => {
-      selectedRating = selectedRating === v ? 0 : v;
+  // ── タッチ専用: touchstart で即座に反応させる ──
+  // click は 300ms 遅延することがあるため touchstart も使う
+  container.addEventListener('touchstart', e => {
+    const star = e.target.closest('.star');
+    if (!star) return;
+    renderStars(selectedRating, Number(star.dataset.value)); // プレビュー
+  }, { passive: true });
+
+  // ── PC ホバープレビュー ──
+  container.addEventListener('mousemove', e => {
+    const star = e.target.closest('.star');
+    if (star) renderStars(selectedRating, Number(star.dataset.value));
+  });
+  container.addEventListener('mouseleave', () => renderStars(selectedRating));
+
+  // ── キーボード操作 ──
+  container.addEventListener('keydown', e => {
+    const star = e.target.closest('.star');
+    if (!star) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const v = Number(star.dataset.value);
+      selectedRating = (selectedRating === v) ? 0 : v;
       renderStars(selectedRating);
-    });
-
-    // ホバー: プレビュー表示
-    star.addEventListener('mouseenter', () => renderStars(v));
-    star.addEventListener('mouseleave', () => renderStars(selectedRating));
-
-    // キーボード操作
-    star.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        selectedRating = selectedRating === v ? 0 : v;
-        renderStars(selectedRating);
-      }
-    });
+    }
   });
 }
 
 // 日付欄変更時に、その日の評価を星にロードする
 function loadRatingForDate(dateStr) {
   selectedRating = ratings[dateStr] || 0;
-  renderStars(selectedRating);
+  renderStars(selectedRating); // preview 省略 → filled のみ表示
 }
 
 // ===== ショートカットボタン =====

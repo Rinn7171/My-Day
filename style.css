@@ -350,21 +350,26 @@ button.primary:active { background: #3560c0; }
 /* ===== 星評価（モーダル入力） ===== */
 .star-input {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   margin-top: 4px;
+  /* タップ遅延（300ms）を除去 */
+  touch-action: manipulation;
 }
 .star-input .star {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   color: #ddd;
   cursor: pointer;
   line-height: 1;
-  transition: color 0.1s, transform 0.08s;
+  padding: 2px 3px;          /* タップ領域を広げる */
+  transition: color 0.08s, transform 0.08s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  /* iOS Safari で <span> のタップを確実に受け取る */
+  pointer-events: auto;
 }
 .star-input .star.filled  { color: #f5b700; }
-.star-input .star.hovered { color: #f5b700; opacity: 0.7; }
-.star-input .star:active  { transform: scale(0.88); }
+.star-input .star.preview { color: #f5b700; opacity: 0.6; }
+.star-input .star:active  { transform: scale(0.85); }
 
 /* ===== 星評価（タイムライン日付ラベル） ===== */
 .tl-date-label {
