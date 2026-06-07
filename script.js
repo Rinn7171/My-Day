@@ -127,9 +127,9 @@ function renderTimeline() {
     lbl.appendChild(starsEl);
     grid.appendChild(lbl);
 
-    // タイムライン行
+    // タイムライン行（今日は today-row クラスで背景色変更）
     const row = document.createElement('div');
-    row.className = 'tl-row';
+    row.className = 'tl-row' + (date === today ? ' today-row' : '');
 
     // グリッド線
     for (let h = 0; h <= 24; h++) {
