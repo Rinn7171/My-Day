@@ -355,6 +355,47 @@ button.primary:active { background: #3560c0; }
 #btn-save:hover    { background: #4070d0; }
 #btn-save:active   { background: #3560c0; }
 
+/* ===== 凡例エリア ===== */
+#legend-section {
+  margin: 0 16px 40px;
+  padding: 16px 18px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+#legend-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #888;
+  margin-bottom: 12px;
+  letter-spacing: 0.03em;
+}
+#legend-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #444;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+/* 記録がないときの空メッセージ */
+.legend-empty {
+  font-size: 0.82rem;
+  color: #bbb;
+}
+
 /* ===== タブレット以上: モーダルをセンター表示 ===== */
 @media (min-width: 600px) {
   .modal-overlay { align-items: center; }

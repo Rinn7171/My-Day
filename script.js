@@ -188,6 +188,45 @@ function renderTimeline() {
 
     grid.appendChild(row);
   });
+
+  renderLegend();
+}
+
+// ===== 凡例描画 =====
+function renderLegend() {
+  const list = document.getElementById('legend-list');
+  list.innerHTML = '';
+
+  // records から「ラベル → 色」のマップを生成（後から登録した色を優先）
+  const map = new Map();
+  records.forEach(r => map.set(r.label, r.color));
+
+  if (map.size === 0) {
+    const empty = document.createElement('span');
+    empty.className = 'legend-empty';
+    empty.textContent = '行動を追加すると、ここに色一覧が表示されます。';
+    list.appendChild(empty);
+    return;
+  }
+
+  // ラベルのアルファベット・五十音順でソートして表示
+  [...map.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0], 'ja'))
+    .forEach(([label, color]) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+
+      const dot = document.createElement('span');
+      dot.className = 'legend-dot';
+      dot.style.background = color;
+
+      const text = document.createElement('span');
+      text.textContent = label;
+
+      item.appendChild(dot);
+      item.appendChild(text);
+      list.appendChild(item);
+    });
 }
 
 // ===== ツールチップ =====
