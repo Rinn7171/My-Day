@@ -30,9 +30,21 @@
   <div class="modal">
     <h2 id="modal-title">行動を登録</h2>
 
-    <div class="form-row">
-      <label for="f-date">日付</label>
-      <input type="date" id="f-date">
+    <div class="form-row date-rating-row">
+      <div class="date-col">
+        <label for="f-date">日付</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="rating-col">
+        <label>今日の評価</label>
+        <div class="star-input" id="star-input" role="radiogroup" aria-label="1〜5段階評価">
+          <span class="star" data-value="1" role="radio" tabindex="0" aria-label="1点">☆</span>
+          <span class="star" data-value="2" role="radio" tabindex="0" aria-label="2点">☆</span>
+          <span class="star" data-value="3" role="radio" tabindex="0" aria-label="3点">☆</span>
+          <span class="star" data-value="4" role="radio" tabindex="0" aria-label="4点">☆</span>
+          <span class="star" data-value="5" role="radio" tabindex="0" aria-label="5点">☆</span>
+        </div>
+      </div>
     </div>
 
     <div class="form-row row2">

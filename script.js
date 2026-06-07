@@ -5,21 +5,29 @@ const COLORS = [
   '#5b8dee', '#4caf88', '#e07b54', '#a06be0',
   '#e0b44a', '#e06090', '#6bbce0', '#888',
 ];
-const STORAGE_KEY = 'lifelog_v1';
+const STORAGE_KEY        = 'lifelog_v1';
+const RATINGS_STORAGE_KEY = 'lifelog_ratings_v1';
 
 // ===== 状態 =====
-let records = [];      // { id, date, start, end, label, color }
+let records = [];        // { id, date, start, end, label, color }
+let ratings = {};        // { "2024-06-07": 3, ... }
 let editingId = null;
 let selectedColor = COLORS[0];
 let ctxTargetId = null;
+let selectedRating = 0;  // モーダルで選択中の評価（0=未評価）
 
 // ===== LocalStorage =====
 function load() {
   try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
   catch { records = []; }
+  try { ratings = JSON.parse(localStorage.getItem(RATINGS_STORAGE_KEY)) || {}; }
+  catch { ratings = {}; }
 }
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+function saveRatings() {
+  localStorage.setItem(RATINGS_STORAGE_KEY, JSON.stringify(ratings));
 }
 
 // ===== ユーティリティ =====
@@ -95,7 +103,20 @@ function renderTimeline() {
     // 日付ラベル
     const lbl = document.createElement('div');
     lbl.className = 'tl-date-label' + (date === today ? ' today' : '');
-    lbl.textContent = dateLabel(date);
+
+    // 日付テキスト
+    const dateText = document.createElement('span');
+    dateText.className = 'tl-date-text';
+    dateText.textContent = dateLabel(date);
+    lbl.appendChild(dateText);
+
+    // 星評価
+    const r = ratings[date] || 0;
+    const starsEl = document.createElement('span');
+    starsEl.className = 'tl-date-stars' + (r === 0 ? ' empty' : '');
+    starsEl.textContent = r > 0 ? '★'.repeat(r) + '☆'.repeat(5 - r) : '☆☆☆☆☆';
+    starsEl.title = r > 0 ? `評価: ${r}/5` : '未評価';
+    lbl.appendChild(starsEl);
     grid.appendChild(lbl);
 
     // タイムライン行
@@ -219,6 +240,48 @@ document.addEventListener('pointerdown', e => {
   if (!ctxMenu.contains(e.target)) hideCtxMenu();
 });
 
+// ===== 星評価UI =====
+function renderStars(value) {
+  // value: 0〜5（0=未評価）
+  document.querySelectorAll('#star-input .star').forEach(s => {
+    const v = Number(s.dataset.value);
+    s.textContent = v <= value ? '★' : '☆';
+    s.classList.toggle('filled', v <= value);
+  });
+}
+
+function initStarInput() {
+  const stars = document.querySelectorAll('#star-input .star');
+
+  stars.forEach(star => {
+    const v = Number(star.dataset.value);
+
+    // クリック: 評価を確定（同じ星を再クリックで0にリセット）
+    star.addEventListener('click', () => {
+      selectedRating = selectedRating === v ? 0 : v;
+      renderStars(selectedRating);
+    });
+
+    // ホバー: プレビュー表示
+    star.addEventListener('mouseenter', () => renderStars(v));
+    star.addEventListener('mouseleave', () => renderStars(selectedRating));
+
+    // キーボード操作
+    star.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        selectedRating = selectedRating === v ? 0 : v;
+        renderStars(selectedRating);
+      }
+    });
+  });
+}
+
+// 日付欄変更時に、その日の評価を星にロードする
+function loadRatingForDate(dateStr) {
+  selectedRating = ratings[dateStr] || 0;
+  renderStars(selectedRating);
+}
+
 // ===== ショートカットボタン =====
 function initShortcutButtons() {
   const buttons = document.querySelectorAll('.shortcut-btn');
@@ -264,6 +327,10 @@ function openModal(rec = null) {
   selectedColor = rec ? rec.color : COLORS[0];
   renderColorPicker();
 
+  // 星評価: その日の保存値を読み込む
+  const targetDate = rec ? rec.date : todayStr();
+  loadRatingForDate(targetDate);
+
   // ショートカットボタンのハイライトをリセットし、編集時は対応ボタンを選択状態に
   document.querySelectorAll('.shortcut-btn').forEach(btn => {
     btn.classList.toggle('active', rec ? btn.dataset.label === rec.label : false);
@@ -277,6 +344,11 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   editingId = null;
 }
+
+// 日付変更 → その日の星評価をロード
+document.getElementById('f-date').addEventListener('change', e => {
+  loadRatingForDate(e.target.value);
+});
 
 document.getElementById('btn-open-modal').addEventListener('click', () => openModal());
 document.getElementById('btn-cancel').addEventListener('click', closeModal);
@@ -308,7 +380,15 @@ document.getElementById('btn-save').addEventListener('click', () => {
     records.push(entry);
   }
 
+  // 星評価を保存（0=未評価のときはキーを削除）
+  if (selectedRating > 0) {
+    ratings[date] = selectedRating;
+  } else {
+    delete ratings[date];
+  }
+
   save();
+  saveRatings();
   renderTimeline();
   closeModal();
 });
@@ -317,3 +397,4 @@ document.getElementById('btn-save').addEventListener('click', () => {
 load();
 renderTimeline();
 initShortcutButtons();
+initStarInput();
