@@ -78,12 +78,11 @@ function renderTimeline() {
   const grid = document.getElementById('tl-grid');
   grid.innerHTML = '';
 
-  // 直近7日間（今日 + 過去6日）を固定で表示
-  // ※ toISOString() はUTCになるため localDateStr() を使う
+  // 過去30日分（29日前 → 今日の順で表示、今日が一番下）
   const today = todayStr();
   const dates = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(); // 現在のローカル時刻
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
     d.setDate(d.getDate() - i);
     dates.push(localDateStr(d));
   }
@@ -190,6 +189,16 @@ function renderTimeline() {
   });
 
   renderLegend();
+}
+
+// 今日の行へスクロール（ページ読み込み時のみ呼ぶ）
+function scrollToToday() {
+  const todayRow = document.querySelector('.tl-row.today-row');
+  if (!todayRow) return;
+  // ヘッダーの高さ分オフセットしてスクロール
+  const headerH = document.querySelector('header')?.offsetHeight ?? 52;
+  const top = todayRow.getBoundingClientRect().top + window.scrollY - headerH - 12;
+  window.scrollTo({ top, behavior: 'smooth' });
 }
 
 // ===== 凡例描画 =====
@@ -468,3 +477,5 @@ load();
 renderTimeline();
 initShortcutButtons();
 initStarInput();
+// レイアウト確定後に今日の行へスクロール
+requestAnimationFrame(() => scrollToToday());

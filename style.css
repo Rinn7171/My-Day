@@ -116,9 +116,12 @@ button.primary:active { background: #3560c0; }
   border-bottom: 1px solid #e0ddd6;
   background: #fff;
 }
-.tl-row.today-row { background: #f0f5ff; }
-.tl-row:hover     { background: #fafaf7; }
-.tl-row.today-row:hover { background: #e8effc; }
+.tl-row.today-row {
+  background: #eef4ff;
+  box-shadow: inset 3px 0 0 #5b8dee; /* 左端に青いアクセントライン */
+}
+.tl-row:hover           { background: #fafaf7; }
+.tl-row.today-row:hover { background: #e4edfc; }
 
 /* グリッド線 */
 .tl-gridline {
