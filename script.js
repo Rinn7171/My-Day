@@ -35,10 +35,18 @@ function toMinutes(t) {
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
 }
+// ローカル日時で "YYYY-MM-DD" を返す（toISOString はUTCになるため使わない）
+function localDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr(new Date());
 }
 function dateLabel(dateStr) {
+  // "YYYY-MM-DD" をローカルとして解釈（T00:00:00 を付けてローカル時間でパース）
   const d = new Date(dateStr + 'T00:00:00');
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
@@ -71,12 +79,13 @@ function renderTimeline() {
   grid.innerHTML = '';
 
   // 直近7日間（今日 + 過去6日）を固定で表示
+  // ※ toISOString() はUTCになるため localDateStr() を使う
   const today = todayStr();
   const dates = [];
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(today + 'T00:00:00');
+    const d = new Date(); // 現在のローカル時刻
     d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().slice(0, 10));
+    dates.push(localDateStr(d));
   }
 
   // ── 時刻ヘッダー ──
