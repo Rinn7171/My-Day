@@ -247,12 +247,19 @@ function initShortcutButtons() {
 function openModal(rec = null) {
   editingId = rec ? rec.id : null;
   document.getElementById('f-date').value  = rec ? rec.date  : todayStr();
-  const now = new Date();
-  const hh  = String(now.getHours()).padStart(2, '0');
-  const mm  = String(now.getMinutes()).padStart(2, '0');
-  const nowStr = `${hh}:${mm}`;
-  document.getElementById('f-start').value = rec ? rec.start : nowStr;
-  document.getElementById('f-end').value   = rec ? rec.end   : nowStr;
+
+  // 現在時刻を取得し、step="300"（5分刻み）に合わせて5分単位に切り捨て
+  const now        = new Date();
+  const startMin   = Math.floor(now.getHours() * 60 + now.getMinutes()) ;
+  const roundedMin = Math.floor(startMin / 5) * 5;           // 5分単位に切り捨て
+  const endMin     = Math.min(roundedMin + 60, 23 * 60 + 55); // 1時間後、23:55を上限
+
+  function minsToTime(m) {
+    return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  }
+
+  document.getElementById('f-start').value = rec ? rec.start : minsToTime(roundedMin);
+  document.getElementById('f-end').value   = rec ? rec.end   : minsToTime(endMin);
   document.getElementById('f-label').value = rec ? rec.label : '';
   selectedColor = rec ? rec.color : COLORS[0];
   renderColorPicker();
