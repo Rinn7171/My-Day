@@ -247,8 +247,12 @@ function initShortcutButtons() {
 function openModal(rec = null) {
   editingId = rec ? rec.id : null;
   document.getElementById('f-date').value  = rec ? rec.date  : todayStr();
-  document.getElementById('f-start').value = rec ? rec.start : '09:00';
-  document.getElementById('f-end').value   = rec ? rec.end   : '10:00';
+  const now = new Date();
+  const hh  = String(now.getHours()).padStart(2, '0');
+  const mm  = String(now.getMinutes()).padStart(2, '0');
+  const nowStr = `${hh}:${mm}`;
+  document.getElementById('f-start').value = rec ? rec.start : nowStr;
+  document.getElementById('f-end').value   = rec ? rec.end   : nowStr;
   document.getElementById('f-label').value = rec ? rec.label : '';
   selectedColor = rec ? rec.color : COLORS[0];
   renderColorPicker();
