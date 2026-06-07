@@ -151,6 +151,44 @@ button.primary:active { background: #3560c0; }
   text-overflow: ellipsis;
 }
 
+/* ===== ショートカットボタン ===== */
+.shortcut-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.shortcut-btn {
+  border: 1.5px solid #e0ddd6;
+  background: #fafaf7;
+  color: #444;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.12s, border-color 0.12s, transform 0.08s;
+  white-space: nowrap;
+  /* タップ領域確保 */
+  min-height: 36px;
+  -webkit-tap-highlight-color: transparent;
+}
+.shortcut-btn:hover {
+  background: #eef3fd;
+  border-color: #5b8dee;
+  color: #5b8dee;
+}
+.shortcut-btn:active {
+  transform: scale(0.95);
+}
+/* 選択中のボタンをハイライト */
+.shortcut-btn.active {
+  background: #5b8dee;
+  border-color: #5b8dee;
+  color: #fff;
+}
+
 /* ===== ツールチップ ===== */
 .tooltip {
   display: none;

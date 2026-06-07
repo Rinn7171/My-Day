@@ -219,6 +219,30 @@ document.addEventListener('pointerdown', e => {
   if (!ctxMenu.contains(e.target)) hideCtxMenu();
 });
 
+// ===== ショートカットボタン =====
+function initShortcutButtons() {
+  const buttons = document.querySelectorAll('.shortcut-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const label = btn.dataset.label;
+      const color = btn.dataset.color;
+
+      // テキスト欄に入力
+      document.getElementById('f-label').value = label;
+
+      // 対応する色があれば自動選択
+      if (color && COLORS.includes(color)) {
+        selectedColor = color;
+        renderColorPicker();
+      }
+
+      // ボタンのハイライトを切り替え
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
 // ===== モーダル =====
 function openModal(rec = null) {
   editingId = rec ? rec.id : null;
@@ -228,6 +252,12 @@ function openModal(rec = null) {
   document.getElementById('f-label').value = rec ? rec.label : '';
   selectedColor = rec ? rec.color : COLORS[0];
   renderColorPicker();
+
+  // ショートカットボタンのハイライトをリセットし、編集時は対応ボタンを選択状態に
+  document.querySelectorAll('.shortcut-btn').forEach(btn => {
+    btn.classList.toggle('active', rec ? btn.dataset.label === rec.label : false);
+  });
+
   document.getElementById('modal-overlay').classList.add('open');
   // 少し遅らせてフォーカス（iOS Safari 対策）
   setTimeout(() => document.getElementById('f-label').focus(), 80);
@@ -275,3 +305,4 @@ document.getElementById('btn-save').addEventListener('click', () => {
 // ===== 初期化 =====
 load();
 renderTimeline();
+initShortcutButtons();
