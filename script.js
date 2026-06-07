@@ -70,15 +70,14 @@ function renderTimeline() {
   const grid = document.getElementById('tl-grid');
   grid.innerHTML = '';
 
-  // 表示する日付を収集（記録がある日 + 今日の前後±2日）
+  // 直近7日間（今日 + 過去6日）を固定で表示
   const today = todayStr();
-  const dateSet = new Set(records.map(r => r.date));
-  for (let i = -2; i <= 2; i++) {
+  const dates = [];
+  for (let i = 6; i >= 0; i--) {
     const d = new Date(today + 'T00:00:00');
-    d.setDate(d.getDate() + i);
-    dateSet.add(d.toISOString().slice(0, 10));
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
   }
-  const dates = [...dateSet].sort();
 
   // ── 時刻ヘッダー ──
   const spacer = document.createElement('div');

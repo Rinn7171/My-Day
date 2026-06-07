@@ -50,10 +50,12 @@ button.primary:active { background: #3560c0; }
 
 /* ===== タイムラインラッパー ===== */
 #timeline-wrap {
-  padding: 16px 0 32px;
-  /* 横スクロール領域 */
+  padding: 12px 0 40px;
+  /* 横スクロール（スマホで7日分を横に見渡す） */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  /* 縦スクロールは body に任せる */
+  overflow-y: visible;
 }
 
 /* ===== グリッド本体 ===== */
@@ -61,48 +63,66 @@ button.primary:active { background: #3560c0; }
   display: grid;
   /* 左列: 日付＋星ラベル / 右列: タイムライン */
   grid-template-columns: 52px 1fr;
-  /* スマホでも最低幅を確保して横スクロール可能に */
-  min-width: 600px;
+  /* スマホでも横スクロールで24時間を表示できる最低幅 */
+  min-width: 620px;
+  /* 大画面では横幅いっぱいに広がる */
+  width: 100%;
 }
 
-/* ===== 時刻ヘッダー行 ===== */
-.tl-header-spacer { /* 左上の空白 */ }
+/* ===== 時刻ヘッダー（sticky で常に見える） ===== */
+.tl-header-spacer {
+  position: sticky;
+  left: 0;
+  background: #f5f3ee;
+  z-index: 10;
+}
 
 .tl-hour-header {
   position: relative;
-  height: 28px;
+  height: 26px;
   border-bottom: 2px solid #ccc;
+  background: #f5f3ee;
 }
 
 .tl-hour-label {
   position: absolute;
   top: 4px;
-  font-size: 0.68rem;
-  color: #888;
+  font-size: 0.65rem;
+  color: #999;
   transform: translateX(-50%);
   white-space: nowrap;
   user-select: none;
 }
 
-/* ===== 日付ラベル ===== */
+/* ===== 日付ラベル（左列 sticky で横スクロール時も固定） ===== */
 .tl-date-label {
   display: flex;
-  align-items: center;
-  padding-right: 6px;
-  font-size: 0.75rem;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 5px 4px 0;
   font-weight: 700;
   color: #555;
-  justify-content: flex-end;
   border-bottom: 1px solid #e0ddd6;
-  min-height: 52px;
+  min-height: 56px;
   white-space: nowrap;
+  /* 横スクロールしても日付列は左に固定 */
+  position: sticky;
+  left: 0;
+  background: #f5f3ee;
+  z-index: 5;
 }
 .tl-date-label.today { color: #5b8dee; }
+/* 今日行を少し目立たせる */
+.tl-date-label.today + .tl-row {
+  background: #f0f5ff;
+}
 
 /* ===== タイムライン行 ===== */
 .tl-row {
   position: relative;
-  min-height: 52px;
+  min-height: 56px;
   border-bottom: 1px solid #e0ddd6;
   background: #fff;
 }
@@ -372,13 +392,7 @@ button.primary:active { background: #3560c0; }
 .star-input .star:active  { transform: scale(0.85); }
 
 /* ===== 星評価（タイムライン日付ラベル） ===== */
-.tl-date-label {
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  padding: 4px 6px 4px 0;
-}
-.tl-date-text { font-size: 0.75rem; font-weight: 700; }
+.tl-date-text { font-size: 0.72rem; font-weight: 700; }
 .tl-date-stars {
   font-size: 0.6rem;
   color: #f5b700;
@@ -408,12 +422,18 @@ button.primary:active { background: #3560c0; }
   .modal::before { display: none; }
 }
 
+/* ===== タブレット以上: 行を少し高くして見やすく ===== */
+@media (min-width: 600px) {
+  .tl-row        { min-height: 60px; }
+  .tl-date-label { min-height: 60px; }
+}
+
 /* ===== 大画面: グリッド左列を少し広げる ===== */
 @media (min-width: 900px) {
-  .tl-grid { grid-template-columns: 60px 1fr; }
+  .tl-grid { grid-template-columns: 64px 1fr; }
   .tl-date-text { font-size: 0.82rem; }
-  .tl-date-stars { font-size: 0.65rem; }
+  .tl-date-stars { font-size: 0.68rem; }
   .activity-block { font-size: 0.78rem; }
   header { padding: 12px 24px; }
-  #timeline-wrap { padding: 24px 0 40px; }
+  #timeline-wrap { padding: 20px 0 48px; }
 }
